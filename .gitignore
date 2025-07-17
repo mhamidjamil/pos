@@ -1,0 +1,60 @@
+# ==== GLOBAL RECOMMENDATION ====
+# Ignore system/editor-generated files (should be in global gitignore but listed here just in case)
+*.swp
+*.bak
+*.tmp
+*.DS_Store
+*.~lock.*
+ehthumbs.db
+Thumbs.db
+
+# ==== BUNDLER CONFIGURATION ====
+/.bundle
+
+# ==== ENVIRONMENT VARIABLES ====
+# Ignore environment files (except for .erb templates)
+/.env*
+!/.env*.erb
+
+# ==== LOG & TEMP FILES ====
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
+
+# PIDs
+/tmp/pids/*
+!/tmp/pids/
+!/tmp/pids/.keep
+
+# ==== STORAGE & CACHES ====
+/storage/*
+!/storage/.keep
+/tmp/storage/*
+!/tmp/storage/
+!/tmp/storage/.keep
+
+# ==== ASSETS (Precompiled) ====
+/public/assets
+/public/packs
+/public/packs-test
+/node_modules
+.yarn
+.yarn-cache
+
+# ==== DATABASE ====
+/db/*.sqlite3
+/db/*.sqlite3-journal
+
+# ==== CREDENTIALS & MASTER KEY ====
+/config/master.key
+/config/credentials/*.key
+
+# ==== BYEBUG & PRY FILES ====
+.byebug_history
+.pry_history
+
+# ==== COVERAGE & TEST ARTIFACTS ====
+/coverage/
+/spec/examples.txt
+/spec/tmp
