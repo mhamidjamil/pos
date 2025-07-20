@@ -35,6 +35,67 @@ module Api
         head :no_content
       end
 
+    def import
+      if params[:file].blank?
+        return render json: { error: "No file provided" }, status: :bad_request
+      end
+
+      file = params[:file]
+
+      begin
+        spreadsheet = Roo::Spreadsheet.open(file.path)
+        spreadsheet.default_sheet = spreadsheet.sheets.first
+
+        header_row = 1
+        header = spreadsheet.row(header_row).map(&:to_s)
+
+        created_count = 0
+        updated_count = 0
+        failed_rows = []
+
+        (header_row + 1).upto(spreadsheet.last_row) do |i|
+          row_data = Hash[[ header, spreadsheet.row(i) ].transpose]
+
+          begin
+            product = Product.find_or_initialize_by(product_code: row_data["Code"])
+
+            product.name              = row_data["NAME"] || "temp"
+            product.description       = row_data["Description"] || ""
+            product.sale_price        = row_data["COST"].to_f rescue 0
+            product.quantity_in_stock = row_data["PCS/CTN"].to_i rescue 0
+            product.unit_label        = row_data["Unit Label"] || "piece"
+
+            if product.new_record?
+              product.save!
+              created_count += 1
+            elsif product.changed?
+              debugger
+              product.save!
+              updated_count += 1
+            end
+
+          rescue => e
+            failed_rows << {
+              row_number: i,
+              data: row_data,
+              error: e.message
+            }
+          end
+        end
+
+        render json: {
+          message: "Product import completed.",
+          created: created_count,
+          updated: updated_count,
+          failed: failed_rows.size,
+          errors: failed_rows
+        }, status: :ok
+
+      rescue => e
+        render json: { error: e.message }, status: :unprocessable_entity
+      end
+    end
+
       private
 
       def product_params
